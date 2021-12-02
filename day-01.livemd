@@ -1,0 +1,26 @@
+# Day 1
+
+## Part 1
+
+```elixir
+input = File.read!("/Users/andreicek/Workspace/aoc2021/day-01.txt")
+```
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(fn x -> String.to_integer(x) end)
+|> Enum.chunk_every(2, 1, :discard)
+|> Enum.count(fn [l, r] -> r > l end)
+```
+
+## Part 2
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(&String.to_integer/1)
+|> Enum.chunk_every(3, 1, :discard)
+|> Enum.chunk_every(2, 1, :discard)
+|> Enum.count(fn [[l, m1, m2], [m1, m2, r]] -> r > l end)
+```

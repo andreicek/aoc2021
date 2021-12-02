@@ -1,0 +1,41 @@
+# Day 2
+
+## Section
+
+```elixir
+input = File.read!("/Users/andreicek/Workspace/aoc2021/day-02.txt")
+```
+
+## Part 1
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(&String.split(&1, " "))
+|> Enum.map(fn [pos, n] -> [pos, String.to_integer(n)] end)
+|> Enum.reduce({0, 0}, fn pos, {horizontal, depth} ->
+  case pos do
+    ["forward", n] -> {horizontal + n, depth}
+    ["down", n] -> {horizontal, depth + n}
+    ["up", n] -> {horizontal, depth - n}
+  end
+end)
+|> then(fn {horizontal, depth} -> horizontal * depth end)
+```
+
+## Part 2
+
+```elixir
+input
+|> String.split("\n", trim: true)
+|> Enum.map(&String.split(&1, " "))
+|> Enum.map(fn [pos, n] -> [pos, String.to_integer(n)] end)
+|> Enum.reduce({0, 0, 0}, fn pos, {horizontal, depth, aim} ->
+  case pos do
+    ["forward", n] -> {horizontal + n, depth + n * aim, aim}
+    ["down", n] -> {horizontal, depth, aim + n}
+    ["up", n] -> {horizontal, depth, aim - n}
+  end
+end)
+|> then(fn {horizontal, depth, _aim} -> horizontal * depth end)
+```
