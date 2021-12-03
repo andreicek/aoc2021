@@ -30,7 +30,6 @@ input
   "forward " <> n, {pos, depth, aim} ->
     number = String.to_integer(n)
     {pos + number, depth + number * aim, aim}
-    x
 
   "down " <> n, {pos, depth, aim} ->
     {pos, depth, aim + String.to_integer(n)}

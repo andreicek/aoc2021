@@ -1,3 +1,5 @@
+<!-- vim: syntax=markdown -->
+
 # Day 3
 
 ## Setup
@@ -56,5 +58,23 @@ gamma * epsilon
 ## Part 2
 
 ```elixir
+intput = """
+00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010
+"""
 
+rates =
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.map(&String.split(&1, "", trim: true))
 ```
