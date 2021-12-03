@@ -1,0 +1,60 @@
+# Day 3
+
+## Setup
+
+```elixir
+input = File.read!("/Users/andreicek/Workspace/aoc2021/day-03.txt")
+```
+
+## Part 1
+
+```elixir
+defmodule Day3 do
+  def bit_count(n), do: for(<<bit::1 <- :binary.encode_unsigned(n)>>, do: bit) |> Enum.sum()
+
+  def common(arr, bits, :most), do: arr |> Enum.map(fn n -> if n > bits - n, do: 1, else: 0 end)
+  def common(arr, bits, :least), do: arr |> Enum.map(fn n -> if n < bits - n, do: 1, else: 0 end)
+
+  def transpose(rows) do
+    rows
+    |> List.zip()
+    |> Enum.map(&Tuple.to_list/1)
+  end
+end
+
+rates =
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.map(&String.split(&1, "", trim: true))
+
+bits = length(rates)
+
+bit_coutns =
+  rates
+  |> Day3.transpose()
+  |> Enum.map(&Enum.join/1)
+  |> Enum.map(&(Integer.parse(&1, 2) |> elem(0)))
+  |> Enum.map(&Day3.bit_count/1)
+
+gamma =
+  bit_coutns
+  |> Day3.common(bits, :most)
+  |> Enum.join("")
+  |> Integer.parse(2)
+  |> elem(0)
+
+epsilon =
+  bit_coutns
+  |> Day3.common(bits, :least)
+  |> Enum.join("")
+  |> Integer.parse(2)
+  |> elem(0)
+
+gamma * epsilon
+```
+
+## Part 2
+
+```elixir
+
+```

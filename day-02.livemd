@@ -2,7 +2,7 @@
 
 # Day 2
 
-## Section
+## Setup
 
 ```elixir
 input = File.read!("/Users/andreicek/Workspace/aoc2021/day-02.txt")
@@ -13,16 +13,12 @@ input = File.read!("/Users/andreicek/Workspace/aoc2021/day-02.txt")
 ```elixir
 input
 |> String.split("\n", trim: true)
-|> Enum.map(&String.split(&1, " "))
-|> Enum.map(fn [pos, n] -> [pos, String.to_integer(n)] end)
-|> Enum.reduce({0, 0}, fn pos, {horizontal, depth} ->
-  case pos do
-    ["forward", n] -> {horizontal + n, depth}
-    ["down", n] -> {horizontal, depth + n}
-    ["up", n] -> {horizontal, depth - n}
-  end
+|> Enum.reduce({_pos = 0, _depth = 0}, fn
+  "forward " <> n, {pos, depth} -> {pos + String.to_integer(n), depth}
+  "down " <> n, {pos, depth} -> {pos, depth + String.to_integer(n)}
+  "up " <> n, {pos, depth} -> {pos, depth - String.to_integer(n)}
 end)
-|> then(fn {horizontal, depth} -> horizontal * depth end)
+|> then(fn {pos, depth} -> pos * depth end)
 ```
 
 ## Part 2
@@ -30,14 +26,17 @@ end)
 ```elixir
 input
 |> String.split("\n", trim: true)
-|> Enum.map(&String.split(&1, " "))
-|> Enum.map(fn [pos, n] -> [pos, String.to_integer(n)] end)
-|> Enum.reduce({0, 0, 0}, fn pos, {horizontal, depth, aim} ->
-  case pos do
-    ["forward", n] -> {horizontal + n, depth + n * aim, aim}
-    ["down", n] -> {horizontal, depth, aim + n}
-    ["up", n] -> {horizontal, depth, aim - n}
-  end
+|> Enum.reduce({_pos = 0, _depth = 0, _aim = 0}, fn
+  "forward " <> n, {pos, depth, aim} ->
+    number = String.to_integer(n)
+    {pos + number, depth + number * aim, aim}
+    x
+
+  "down " <> n, {pos, depth, aim} ->
+    {pos, depth, aim + String.to_integer(n)}
+
+  "up " <> n, {pos, depth, aim} ->
+    {pos, depth, aim - String.to_integer(n)}
 end)
-|> then(fn {horizontal, depth, _aim} -> horizontal * depth end)
+|> then(fn {pos, depth, _aim} -> pos * depth end)
 ```
