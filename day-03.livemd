@@ -5,76 +5,67 @@
 ## Setup
 
 ```elixir
+import Bitwise
+
 input = File.read!("/Users/andreicek/Workspace/aoc2021/day-03.txt")
 ```
 
 ## Part 1
 
 ```elixir
-defmodule Day3 do
-  def bit_count(n), do: for(<<bit::1 <- :binary.encode_unsigned(n)>>, do: bit) |> Enum.sum()
-
-  def common(arr, bits, :most), do: arr |> Enum.map(fn n -> if n > bits - n, do: 1, else: 0 end)
-  def common(arr, bits, :least), do: arr |> Enum.map(fn n -> if n < bits - n, do: 1, else: 0 end)
-
-  def transpose(rows) do
-    rows
-    |> List.zip()
-    |> Enum.map(&Tuple.to_list/1)
-  end
-end
-
-rates =
+numbers =
   input
   |> String.split("\n", trim: true)
-  |> Enum.map(&String.split(&1, "", trim: true))
+  |> Enum.map(&(&1 |> String.to_charlist() |> List.to_tuple()))
 
-bits = length(rates)
+half = div(length(numbers), 2)
 
-bit_coutns =
-  rates
-  |> Day3.transpose()
-  |> Enum.map(&Enum.join/1)
-  |> Enum.map(&(Integer.parse(&1, 2) |> elem(0)))
-  |> Enum.map(&Day3.bit_count/1)
+gamma_as_list =
+  for pos <- 0..11 do
+    zero_count = Enum.count_until(numbers, &(elem(&1, pos) == ?0), half + 1)
+    if zero_count > half, do: ?0, else: ?1
+  end
 
-gamma =
-  bit_coutns
-  |> Day3.common(bits, :most)
-  |> Enum.join("")
-  |> Integer.parse(2)
-  |> elem(0)
-
-epsilon =
-  bit_coutns
-  |> Day3.common(bits, :least)
-  |> Enum.join("")
-  |> Integer.parse(2)
-  |> elem(0)
-
+gamma = List.to_integer(gamma_as_list, 2)
+epsilon = bnot(gamma) &&& 0b111111111111
 gamma * epsilon
 ```
 
 ## Part 2
 
 ```elixir
-intput = """
-00100
-11110
-10110
-10111
-10101
-01111
-00111
-11100
-10000
-11001
-00010
-01010
-"""
+defmodule Recursion do
+  defp recur([number], _pos, _fun) do
+    number
+    |> Tuple.to_list()
+    |> List.to_integer(2)
+  end
 
-rates =
+  defp recur(numbers, pos, fun) do
+    zero_count = Enum.count(numbers, &(elem(&1, pos) == ?0))
+    one_count = length(numbers) - zero_count
+    to_keep = fun.(zero_count, one_count)
+    numbers = Enum.filter(numbers, &(elem(&1, pos) == to_keep))
+    recur(numbers, pos + 1, fun)
+  end
+
+  def o2(numbers) do
+    recur(numbers, 0, fn zero_count, one_count ->
+      if one_count >= zero_count, do: ?1, else: ?0
+    end)
+  end
+
+  def co2(numbers) do
+    recur(numbers, 0, fn zero_count, one_count ->
+      if zero_count <= one_count, do: ?0, else: ?1
+    end)
+  end
+end
+
+numbers =
   input
   |> String.split("\n", trim: true)
-  |> Enum.map(&String.split(&1, "", trim: true))
+  |> Enum.map(&(&1 |> String.to_charlist() |> List.to_tuple()))
+
+Recursion.o2(numbers) * Recursion.co2(numbers)
 ```
